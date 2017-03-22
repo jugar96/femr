@@ -91,3 +91,8 @@ input[type="submit"] {
 input[type="submit"]:hover {
     background: #f90000;
 }
+
+div .msg_error{
+    color: red;
+    font-size: large;
+}

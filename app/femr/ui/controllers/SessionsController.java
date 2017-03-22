@@ -44,17 +44,22 @@ public class SessionsController extends Controller {
             return redirect(routes.HomeController.index());
         }
 
-        return ok(create.render(createViewModelForm));
+        return ok(create.render(createViewModelForm, null));
     }
 
     public Result createPost() {
 
         final Form<CreateViewModel> createViewModelForm = formFactory.form(CreateViewModel.class);
         CreateViewModel viewModel = createViewModelForm.bindFromRequest().get();
+
+        if(StringUtils.isNullOrWhiteSpace(viewModel.getEmail()) || StringUtils.isNullOrWhiteSpace(viewModel.getPassword())){
+            return ok(create.render(createViewModelForm, "The user and/or password was not provided"));
+        }
         ServiceResponse<CurrentUser> response = sessionsService.createSession(viewModel.getEmail(), viewModel.getPassword(), request().remoteAddress());
 
         if (response.hasErrors()) {
-            return ok(create.render(createViewModelForm));
+
+            return ok(create.render(createViewModelForm, "Invalid User/Password Combination"));
         }else{
             IUser user = userService.retrieveById(response.getResponseObject().getId());
             user.setLastLogin(dateUtils.getCurrentDateTime());
